@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:second_task/featurs/auth/data/firebase/auth_firebase_database.dart';
+import 'package:second_task/featurs/auth/data/model/user_model.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -362,13 +364,19 @@ class _RegisterPageState extends State<RegisterPage> {
           );
         },
       );
-
       try {
         final credential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
               email: email1.text,
               password: password1.text,
             );
+        var userModel = UserModel(
+          id: credential.user?.uid,
+          email: email1.text,
+          userName: userName1.text,
+          password: password1.text,
+        );
+        AuthFirebaseDatabase.addUser(userModel);
         setState(() {
           isLoading = !isLoading;
         });
@@ -391,7 +399,7 @@ class _RegisterPageState extends State<RegisterPage> {
             isSuccess = !isSuccess;
           });
         } else if (e.code == 'email-already-in-use') {
-          print("'email-already-in-use'");
+          print("email-already-in-use");
         }
       } catch (e) {
         print(e);
